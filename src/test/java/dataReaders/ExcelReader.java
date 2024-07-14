@@ -15,7 +15,8 @@ public class ExcelReader {
     static FileInputStream fis = null;
 
     public FileInputStream getFileInputStream() {
-        String filepath = PropertiesReader.Data.getProperty("ExcelFilePath");
+        String filepath = System.getProperty("user.dir")+PropertiesReader.Data.getProperty("ExcelFilePath");
+        System.out.println(filepath);
         File srcFile = new File(filepath);
         try {
             fis = new FileInputStream(srcFile);

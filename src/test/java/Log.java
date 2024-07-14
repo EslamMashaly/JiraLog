@@ -36,23 +36,42 @@ public class Log extends ExcelReader {
 
         String loggedDate = DateFormat.DateFormatter(date);
 
-        Double timeInDouble = Double.parseDouble(time) * 3600;
-        int timeInSeconds = timeInDouble.intValue();
-        System.out.println(timeInDouble);
-
         baseURI = PropertiesReader.Data.getProperty("URL");
-         given().relaxedHTTPSValidation().body("{\n" +
-                        "    \"comment\": \"" + description + "\",\n" +
-                        "    \"started\": \"" + loggedDate + "T12:15:16.746+0000\",\n" +
-                        "    \"timeSpentSeconds\": \"" + timeInSeconds + "\"\n" +
-                        "}")
-                .header("Content-Type", "application/json")
-                .header("Cookie", token)
-                .log().all()
-                .pathParam("storyID", storyID)
-                .when().post("/rest/api/2/issue/{storyID}/worklog")
-                .then().log().all()
-                .assertThat().statusCode(201);
+
+        try {
+
+            Double timeInDouble = Double.parseDouble(time) * 3600;
+            int timeInSeconds = timeInDouble.intValue();
+            System.out.println(timeInDouble);
+
+            given().relaxedHTTPSValidation().body("{\n" +
+                            "    \"comment\": \"" + description + "\",\n" +
+                            "    \"started\": \"" + loggedDate + "T12:15:16.746+0000\",\n" +
+                            "    \"timeSpentSeconds\": \"" + timeInSeconds + "\"\n" +
+                            "}")
+                    .header("Content-Type", "application/json")
+                    .header("Cookie", token)
+                    .log().all()
+                    .pathParam("storyID", storyID)
+                    .when().post("/rest/api/2/issue/{storyID}/worklog")
+                    .then().log().all()
+                    .assertThat().statusCode(201);
+
+        }
+        catch (NumberFormatException ex) {
+            given().relaxedHTTPSValidation().body("{\n" +
+                            "    \"comment\": \"" + description + "\",\n" +
+                            "    \"started\": \"" + loggedDate + "T12:15:16.746+0000\",\n" +
+                            "    \"timeSpent\": \"" + time + "\"\n" +
+                            "}")
+                    .header("Content-Type", "application/json")
+                    .header("Cookie", token)
+                    .log().all()
+                    .pathParam("storyID", storyID)
+                    .when().post("/rest/api/2/issue/{storyID}/worklog")
+                    .then().log().all()
+                    .assertThat().statusCode(201);
+        }
 
     }
 }
